@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import type { AppData, DateKey } from "./types";
-import { toLocalDateKey } from "./dates";
+import { addDays, toLocalDateKey } from "./dates";
 import { loadData, saveData } from "./storage";
 
 const MAX_NAME_LENGTH = 40;
@@ -29,12 +29,13 @@ function initialData(): AppData {
   const habits = DEMO_HABITS.map(({ id, name, icon }) => ({ id, name, icon, createdAt: today }));
   const logs: AppData["logs"] = [];
   for (const habit of DEMO_HABITS) {
+    const streakStart = habit.doneToday ? -(habit.streak - 1) : -habit.streak;
     for (let offset = -27; offset <= 0; offset += 1) {
-      const inStreak = offset >= -(habit.streak - 1) && (habit.doneToday || offset < 0);
-      const olderSample = offset < -(habit.streak - 1) && Math.abs(offset) % habit.olderCadence === 0;
+      const inStreak = offset >= streakStart && (habit.doneToday || offset < 0);
+      const olderSample = offset < streakStart && Math.abs(offset) % habit.olderCadence === 0;
       const completed = inStreak || olderSample || (habit.doneToday && offset === 0);
       if (completed) {
-        const date = offset === 0 ? today : toLocalDateKey(new Date(new Date(today + "T12:00:00").getFullYear(), new Date(today + "T12:00:00").getMonth(), new Date(today + "T12:00:00").getDate() + offset));
+        const date = addDays(today, offset);
         logs.push({ id: `${habit.id}-${date}`, habitId: habit.id, date });
       }
     }
