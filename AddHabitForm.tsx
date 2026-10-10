@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { FormEvent } from "react";
 
 interface Props {
   onAdd: (name: string) => string | null;
