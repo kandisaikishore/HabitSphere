@@ -4,6 +4,7 @@ HabitSphere is a lightweight, local-first habit tracker built with React, TypeSc
 
 ## Current features
 
+- First-run sample workspace with six editable example habits and illustrative check-in history; deleting all habits remains empty on future visits.
 - Create habits with validation (blank names, duplicate names and names longer than 40 characters are rejected).
 - Check or uncheck today's completion with one tap.
 - See each habit's current streak, best streak, and Monday–Sunday completion row.
