@@ -1,8 +1,8 @@
-name: CI
+name: Compatibility and quality checks
 
 on:
   push:
-    branches: [main]
+    branches: [main, "qa/**"]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -12,17 +12,24 @@ permissions:
 
 jobs:
   quality:
-    name: Test and build
+    name: Node ${{ matrix.node-version }} / tests and build
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [20, 22]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+      - name: Verify lockfile is present
+        run: test -f package-lock.json
       - name: Install dependencies
-        run: npm install
+        run: npm ci
       - name: Run unit tests
         run: npm test
       - name: Type-check and production build
