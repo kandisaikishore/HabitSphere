@@ -12,6 +12,15 @@ const NAV: { name: Page; icon: string }[] = [
 ];
 const EMOJIS = ["🏋️", "📖", "💧", "💻", "🧘", "🌱", "🎯", "✍️", "🚶", "🎨"];
 const COLORS = ["#4e75ff", "#22c58b", "#9b67f8", "#f0629b", "#ff773c", "#fbbc3e"];
+const DEFAULT_META: Record<string, HabitMeta> = {
+  "morning exercise": { category: "Health", frequency: "Daily", reminder: "06:00", color: COLORS[2], goal: "30 minutes" },
+  "read a book": { category: "Learning", frequency: "Daily", reminder: "08:00", color: COLORS[3], goal: "10 pages" },
+  "drink water": { category: "Health", frequency: "Daily", reminder: "Any time", color: COLORS[0], goal: "8 glasses" },
+  "learn java": { category: "Learning", frequency: "Daily", reminder: "21:00", color: COLORS[0], goal: "30 minutes" },
+  meditate: { category: "Personal", frequency: "Daily", reminder: "22:00", color: COLORS[4], goal: "10 minutes" },
+  "plan tomorrow": { category: "Productivity", frequency: "Daily", reminder: "21:00", color: COLORS[1], goal: "5 minutes" },
+};
+const defaultMetaFor = (name: string): HabitMeta => DEFAULT_META[name.toLowerCase()] ?? { category: "Health", frequency: "Daily", reminder: "06:00", color: COLORS[0], goal: "" };
 const readLocal = (key: string): unknown => { try { const value = localStorage.getItem(key); return value ? JSON.parse(value) as unknown : {}; } catch { return {}; } };
 const readMeta = (): Record<string, HabitMeta> => {
   const value = readLocal("habitsphere:details");
@@ -49,10 +58,10 @@ export default function App() {
   const datesFor = (habitId: string) => logs.filter((log) => log.habitId === habitId).map((log) => log.date);
   const doneToday = habits.filter((habit) => datesFor(habit.id).includes(today)).length;
   const weeklyAverage = habits.length ? Math.round(habits.reduce((sum, habit) => sum + weeklyCompletion(datesFor(habit.id), week, today), 0) / habits.length) : 0;
-  const filtered = useMemo(() => habits.filter((habit) => habit.name.toLowerCase().includes(search.toLowerCase()) && (categoryFilter === "All" || (metadata[habit.id]?.category ?? metadata["name:" + habit.name.toLowerCase()]?.category ?? "Health") === categoryFilter)), [habits, search, categoryFilter, metadata]);
+  const filtered = useMemo(() => habits.filter((habit) => habit.name.toLowerCase().includes(search.toLowerCase()) && (categoryFilter === "All" || (metadata[habit.id]?.category ?? metadata["name:" + habit.name.toLowerCase()]?.category ?? defaultMetaFor(habit.name).category) === categoryFilter)), [habits, search, categoryFilter, metadata]);
   const labels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const weekStats = week.map((date, index) => ({ date, label: labels[index], total: logs.filter((log) => log.date === date).length }));
-  const metadataFor = (id: string, name?: string): HabitMeta => metadata[id] ?? (name ? metadata["name:" + name.toLowerCase()] : undefined) ?? { category: "Health", frequency: "Daily", reminder: "06:00", color: COLORS[0], goal: "" };
+  const metadataFor = (id: string, name?: string): HabitMeta => metadata[id] ?? (name ? metadata["name:" + name.toLowerCase()] : undefined) ?? (name ? defaultMetaFor(name) : { category: "Health", frequency: "Daily", reminder: "06:00", color: COLORS[0], goal: "" });
   const persistMeta = (next: Record<string, HabitMeta>) => { setMetadata(next); try { localStorage.setItem("habitsphere:details", JSON.stringify(next)); } catch { /* Browser storage can be disabled. */ } };
   const persistGoals = (next: string[]) => { setGoals(next); try { localStorage.setItem("habitsphere:goals", JSON.stringify(next)); } catch { /* Browser storage can be disabled. */ } };
 
