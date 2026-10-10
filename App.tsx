@@ -3,7 +3,7 @@ import { toLocalDateKey, addDays, weekDates } from "./dates";
 import { currentStreak, longestStreak, weeklyCompletion } from "./streaks";
 import { useHabits } from "./useHabits";
 
-type Page = "Dashboard" | "My Habits" | "Calendar" | "Analytics" | "Goals" | "AI Coach" | "Settings";
+type Page = "Dashboard" | "My Habits" | "Habit Details" | "Calendar" | "Analytics" | "Goals" | "AI Coach" | "Settings";
 type Category = "Health" | "Learning" | "Productivity" | "Personal" | "Other";
 type HabitMeta = { category: Category; frequency: string; reminder: string; color: string; goal: string };
 const NAV: { name: Page; icon: string }[] = [
@@ -37,6 +37,7 @@ export default function App() {
   const [categoryFilter, setCategoryFilter] = useState("All");
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedHabitId, setSelectedHabitId] = useState<string | null>(null);
   const [draftName, setDraftName] = useState("");
   const [draftCategory, setDraftCategory] = useState<Category>("Health");
   const [draftEmoji, setDraftEmoji] = useState("🏋️");
@@ -93,6 +94,7 @@ export default function App() {
     deleteHabit(id); const next = { ...metadata }; delete next[id]; if (habit) delete next["name:" + habit.name.toLowerCase()]; persistMeta(next);
   };
   const pageAction = (target: Page) => { setShowForm(false); setPage(target); };
+  const openDetails = (id: string) => { setSelectedHabitId(id); setShowForm(false); setPage("Habit Details"); };
   const coachReply = (raw: string) => {
     const value = raw.trim(); if (!value) return;
     const answer = /motivat|consistent|stuck|hard|miss/i.test(value)
@@ -110,7 +112,7 @@ export default function App() {
     const meta = metadataFor(habit.id, habit.name);
     return <li key={habit.id} className="habit-row">
       <div className="habit-emoji" style={{ backgroundColor: meta.color + "1d" }}>{habit.icon}</div>
-      <div className="habit-main"><strong>{habit.name}</strong><small>◷ {meta.reminder === "Any time" ? "All day" : meta.reminder} · {meta.category}</small></div>
+      <button type="button" className="habit-main habit-detail-button" onClick={() => openDetails(habit.id)} aria-label={"View details for " + habit.name}><strong>{habit.name}</strong><small>◷ {meta.reminder === "Any time" ? "All day" : meta.reminder} · {meta.category}</small></button>
       <button className={"habit-status " + (completed ? "completed" : "")} onClick={() => toggleDay(habit.id, today)} aria-pressed={completed}>{completed ? "✓ Completed" : "◯ Mark Done"}</button>
       <div className="streak-badge">🔥 Streak<strong>{streak} {streak === 1 ? "day" : "days"}</strong></div>
       <button className="delete" aria-label={"Edit " + habit.name} onClick={() => openEdit(habit.id)} title="Edit habit">⋯</button>
@@ -140,6 +142,26 @@ export default function App() {
   const analytics = <><h2 className="section-title">Your Progress, In Focus</h2><div className="metrics"><div className="metric-card"><div className="metric-icon">☷</div><div><strong>{habits.length}</strong><small>Total Habits</small></div></div><div className="metric-card"><div className="metric-icon green">✓</div><div><strong>{doneToday}</strong><small>Completed Today</small></div></div><div className="metric-card"><div className="metric-icon orange">🔥</div><div><strong>{Math.max(0, ...habits.map((habit) => longestStreak(datesFor(habit.id))))}</strong><small>Longest Streak</small></div></div><div className="metric-card"><div className="metric-icon purple">↗</div><div><strong>{weeklyAverage}%</strong><small>Completion Rate</small></div></div></div>
     <div className="analytics-grid"><section className="panel"><div className="section-heading"><h3>Completion Rate</h3><strong style={{ fontSize: 25 }}>{weeklyAverage}%</strong></div>{chart(145)}<p className="panel-sub">Based on your current week's recorded activity.</p></section><section className="panel"><h3>Habit Categories</h3><div className="donut-wrap"><div className="donut"><div className="donut-center">{habits.length}<small>Total Habits</small></div></div><div className="legend">{(["Health", "Learning", "Productivity", "Personal", "Other"] as Category[]).map((category, index) => { const count = habits.filter((habit) => metadataFor(habit.id, habit.name).category === category).length; return <div className="legend-item" key={category}><span className="legend-name"><i className="legend-dot" style={{ background: COLORS[index] }}/>{category}</span><strong>{habits.length ? Math.round(count / habits.length * 100) : 0}%</strong></div>; })}</div></div></section><section className="panel"><h3>Streak Stats</h3><div className="metrics" style={{ gridTemplateColumns: "1fr 1fr", margin: 0 }}><div><strong style={{ fontSize: 23 }}>{Math.max(0, ...habits.map((habit) => longestStreak(datesFor(habit.id))))}</strong><p className="panel-sub">🔥 Longest Streak</p></div><div><strong style={{ fontSize: 23 }}>{Math.max(0, ...habits.map((habit) => currentStreak(datesFor(habit.id), today)))}</strong><p className="panel-sub">🏆 Current Streak</p></div></div></section><section className="panel"><h3>Completion Heatmap · Last 90 days</h3><div className="heatmap">{Array.from({ length: 90 }, (_, index) => { const date = addDays(today, index - 89); const count = logs.filter((log) => log.date === date).length; const level = count === 0 ? 0 : Math.min(4, Math.ceil(count / Math.max(1, habits.length) * 4)); return <span title={date + ": " + count + " completions"} key={date} className={"heat-cell " + (level ? "level-" + level : "")}/>; })}</div></section></div></>;
 
+  const detailsView = (() => {
+    const selectedHabit = habits.find((habit) => habit.id === selectedHabitId);
+    if (!selectedHabit) return <section className="content-card"><h2 className="section-title">Habit details</h2><p className="panel-sub">Choose a habit from My Habits to review its progress.</p><button className="primary-button" onClick={() => pageAction("My Habits")}>Open My Habits</button></section>;
+    const completedDates = datesFor(selectedHabit.id);
+    const completedToday = completedDates.includes(today);
+    const meta = metadataFor(selectedHabit.id, selectedHabit.name);
+    const rate = Math.round(week.filter((date) => date <= today && completedDates.includes(date)).length / Math.max(1, week.filter((date) => date <= today).length) * 100);
+    return <div className="habit-details-layout">
+      <section className="content-card detail-hero-card">
+        <button className="back-link" onClick={() => pageAction("My Habits")}>← Back to My Habits</button>
+        <div className="detail-title-row"><div className="habit-emoji detail-emoji" style={{ backgroundColor: meta.color + "1d" }}>{selectedHabit.icon}</div><div className="detail-title"><h2>{selectedHabit.name}</h2><p>{meta.category} · {meta.frequency}</p></div><span className={"detail-pill " + (completedToday ? "is-complete" : "")}>{completedToday ? "✓ Completed today" : "In progress"}</span></div>
+        <p className="detail-goal">{meta.goal ? "🎯 Goal: " + meta.goal : "🌱 Keep it small, consistent, and achievable."} · Reminder: {meta.reminder === "Any time" ? "Any time" : meta.reminder}</p>
+        <div className="detail-actions"><button className={"primary-button " + (completedToday ? "done-button" : "")} onClick={() => toggleDay(selectedHabit.id, today)}>{completedToday ? "✓ Undo today's check-in" : "✓ Mark Done Today"}</button><button className="secondary-button" onClick={() => openEdit(selectedHabit.id)}>✎ Edit</button><button className="danger-button" onClick={() => { removeHabit(selectedHabit.id); pageAction("My Habits"); }}>♲ Delete</button></div>
+      </section>
+      <div className="detail-metrics"><section className="metric-card"><div className="metric-icon orange">🔥</div><div><strong>{currentStreak(completedDates, today)}</strong><small>Current Streak</small></div></section><section className="metric-card"><div className="metric-icon purple">🏆</div><div><strong>{longestStreak(completedDates)}</strong><small>Best Streak</small></div></section><section className="metric-card"><div className="metric-icon green">✓</div><div><strong>{completedDates.length}</strong><small>Total Completions</small></div></section><section className="metric-card"><div className="metric-icon">↗</div><div><strong>{rate}%</strong><small>This Week</small></div></section></div>
+      <section className="panel detail-history"><div className="section-heading"><h3>Completion History</h3><span>Monday – Sunday</span></div><div className="detail-week">{week.map((date, index) => { const complete = date <= today && completedDates.includes(date); return <div className="detail-day" key={date}><span>{["M", "T", "W", "T", "F", "S", "S"][index]}</span><i className={complete ? "complete" : date > today ? "future" : ""}>{complete ? "✓" : "·"}</i><small>{date.slice(8)}</small></div>; })}</div></section>
+      <section className="panel"><h3>Habit note</h3><p className="panel-sub">Progress grows through small repeatable actions. Keep this habit easy to start and celebrate each completed day.</p></section>
+    </div>;
+  })();
+
   const calendarView = <section className="content-card"><h2 className="section-title">Habit Calendar</h2><p className="panel-sub" style={{ marginBottom: 18 }}>Your recent activity at a glance. Green squares mark days with completed habits.</p><div className="heatmap" style={{ gridTemplateColumns: "repeat(13, minmax(0,1fr))" }}>{Array.from({ length: 91 }, (_, index) => { const date = addDays(today, index - 90); const count = logs.filter((log) => log.date === date).length; const level = count === 0 ? 0 : Math.min(4, Math.ceil(count / Math.max(1, habits.length) * 4)); return <span key={date} title={date + ": " + count + " completions"} className={"heat-cell " + (level ? "level-" + level : "")}/>; })}</div><div className="section-heading" style={{ marginTop: 25 }}><h2>Today's habits</h2><span>{today}</span></div>{renderHabitRows()}</section>;
 
   const goalsView = <><h2 className="section-title">Small goals. Big changes.</h2><section className="content-card"><form className="add-row" onSubmit={(event) => { event.preventDefault(); if (!newGoal.trim()) return; persistGoals([...goals, newGoal.trim()]); setNewGoal(""); }}><input value={newGoal} onChange={(event) => setNewGoal(event.target.value)} placeholder="e.g., Read 10 pages every day" aria-label="New goal"/><button>Add goal</button></form><div className="settings-list" style={{ marginTop: 16 }}>{goals.length ? goals.map((goal, index) => <div className="setting-row" key={goal + index}><div><strong>🎯 {goal}</strong><p>One step at a time — you've got this.</p></div><button className="delete" onClick={() => persistGoals(goals.filter((_, i) => i !== index))}>✕</button></div>) : <p className="empty">No goals yet. Add one meaningful target and make it actionable.</p>}</div></section></>;
@@ -151,6 +173,7 @@ export default function App() {
   let content = dashboard;
   if (showForm) content = addHabitView;
   else if (page === "My Habits") content = <><div className="section-heading"><h2 className="section-title" style={{ margin: 0 }}>My Habits</h2><button className="primary-button" onClick={openCreate}>＋ Add Habit</button></div><div className="filters" style={{ marginTop: 16 }}>{["All", "Health", "Learning", "Productivity", "Personal", "Other"].map((category) => <button key={category} className={"filter-button " + (categoryFilter === category ? "active" : "")} onClick={() => setCategoryFilter(category)}>{category}</button>)}</div>{renderHabitRows()}</>;
+  else if (page === "Habit Details") content = detailsView;
   else if (page === "Calendar") content = calendarView;
   else if (page === "Analytics") content = analytics;
   else if (page === "Goals") content = goalsView;
