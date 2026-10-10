@@ -1,5 +1,5 @@
 import type { DateKey, Habit } from "../types";
-import { currentStreak, longestStreak } from "../lib/streaks";
+import { currentStreak, longestStreak } from "./streaks";
 
 interface Props {
   habit: Habit;
