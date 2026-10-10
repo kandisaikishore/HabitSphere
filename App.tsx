@@ -1,8 +1,8 @@
-import { useHabits } from "./hooks/useHabits";
-import { toLocalDateKey, weekDates } from "./lib/dates";
-import { weeklyCompletion } from "./lib/streaks";
-import { AddHabitForm } from "./components/AddHabitForm";
-import { HabitCard } from "./components/HabitCard";
+import { useHabits } from "./useHabits";
+import { toLocalDateKey, weekDates } from "./dates";
+import { weeklyCompletion } from "./streaks";
+import { AddHabitForm } from "./AddHabitForm";
+import { HabitCard } from "./HabitCard";
 
 export default function App() {
   const { habits, logs, addHabit, deleteHabit, toggleDay } = useHabits();
