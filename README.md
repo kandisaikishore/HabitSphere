@@ -4,6 +4,10 @@
 
 > HabitSphere helps users check off daily habits, track streaks, and see progress across the week. The current app stores habit data in the browser.
 
+## Live Demo
+
+**Deployment URL:** Not verified yet. A live link will be added here after confirming the hosting provider's deployed service URL. Do not treat the repository URL as the live application.
+
 ## At a glance
 
 - **Purpose:** Understand the problem and supported workflows from the feature and scope sections below.
@@ -11,11 +15,7 @@
 - **Configuration:** Keep API keys, database passwords, tokens, and user data out of commits. Use local environment variables for secrets.
 - **Quality:** Run the available build, tests, and lint checks before proposing changes.
 
-
-
 **A lightweight, local-first habit tracker for building routines and reviewing consistency.**
-
-HabitSphere helps users check off daily habits, track streaks, and see progress across the week. The current app stores habit data in the browser.
 
 ## Features
 
