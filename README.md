@@ -1,5 +1,18 @@
 # HabitSphere
 
+[![Repository](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/saikishore2410/HabitSphere) [![Issues](https://img.shields.io/github/issues/saikishore2410/HabitSphere)](https://github.com/saikishore2410/HabitSphere/issues) [![Last Commit](https://img.shields.io/github/last-commit/saikishore2410/HabitSphere)](https://github.com/saikishore2410/HabitSphere/commits/main)
+
+> HabitSphere helps users check off daily habits, track streaks, and see progress across the week. The current app stores habit data in the browser.
+
+## At a glance
+
+- **Purpose:** Understand the problem and supported workflows from the feature and scope sections below.
+- **Setup:** Follow the project-specific steps in **Getting started** or **Run locally**; verify commands against the current source and package scripts.
+- **Configuration:** Keep API keys, database passwords, tokens, and user data out of commits. Use local environment variables for secrets.
+- **Quality:** Run the available build, tests, and lint checks before proposing changes.
+
+
+
 **A lightweight, local-first habit tracker for building routines and reviewing consistency.**
 
 HabitSphere helps users check off daily habits, track streaks, and see progress across the week. The current app stores habit data in the browser.
