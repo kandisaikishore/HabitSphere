@@ -1,26 +1,36 @@
 # HabitSphere
 
-HabitSphere is a lightweight, local-first habit tracker built with React, TypeScript and Vite. Track daily check-ins, monitor streaks, and review weekly consistency.
+**A lightweight, local-first habit tracker for building routines and reviewing consistency.**
 
-## Current features
+HabitSphere helps users check off daily habits, track streaks, and see progress across the week. The current app stores habit data in the browser.
 
-- First-run sample workspace with six editable example habits and illustrative check-in history; deleting all habits remains empty on future visits.
-- Create habits with validation (blank names, duplicate names and names longer than 40 characters are rejected).
-- Check or uncheck today's completion with one tap.
-- See each habit's current streak, best streak, and Monday–Sunday completion row.
-- Review overall daily progress and weekly consistency.
-- Delete a habit with confirmation; its completion history is removed with it.
-- Persist data in browser `localStorage`; malformed or blocked storage fails safely and does not crash the app.
+## Features
+
+- Create habits with validation for blank names, duplicates, and long names
+- Check or uncheck today's completion with one tap
+- Track current and best streaks
+- Review Monday–Sunday completion history for each habit
+- See daily progress and weekly consistency
+- Delete habits with confirmation
+- Persist data in browser `localStorage`
+- Handle unavailable or malformed local storage safely
+
+## Tech stack
+
+- React
+- TypeScript
+- Vite
 
 ## Requirements
 
-- Node.js 20 or later (Node.js 20 is used in CI).
-- npm.
+- Node.js 20+
 
-## Run locally
+## Quick start
 
 ```bash
-npm ci
+git clone https://github.com/saikishore2410/HabitSphere.git
+cd HabitSphere
+npm install
 npm run dev
 ```
 
@@ -28,53 +38,20 @@ npm run dev
 
 ```bash
 npm test
+npm run lint
 npm run build
 ```
 
-The production build runs TypeScript checking before Vite bundling. GitHub Actions runs unit tests and the production build on pushes and pull requests targeting `main`. A passing workflow is evidence for automated unit/build checks; it does not replace browser, accessibility, security, or end-to-end testing.
+Confirm the current `package.json` scripts if any command is unavailable in your branch.
 
-## Deploy
+## Data and limitations
 
-### Lovable
+Habit history is stored locally in the current browser. It does not automatically synchronize across devices or accounts. Use the demo workspace to evaluate the interface; add backend persistence and account controls if multi-device usage is required.
 
-1. Import the GitHub repository into Lovable after the workspace has enough credits.
-2. Verify the build and tests in the editor.
-3. Publish from Lovable and smoke-test the published URL on desktop and mobile.
+## Contributing
 
-### Static hosting (Vite)
+For bug reports, provide steps to reproduce. Include tests for streak calculation, date boundaries, and persistence changes.
 
-Use any static host that supports Node-based builds (for example, Netlify, Vercel static output or GitHub Pages).
+## License
 
-- Build command: `npm ci && npm test && npm run build`
-- Output directory: `dist`
-- No server-side environment variables are required for the current local-first version.
-
-For GitHub Pages deployments to a non-root path, configure Vite's `base` option for that repository path before deployment.
-
-## Data and privacy
-
-The current app stores habits only in the current browser profile using `localStorage`. Data is not synced across devices and can be lost if browser storage is cleared. There is no account-based backup in the current version. Export/import and cloud sync should be implemented explicitly before promising them.
-
-## Date and streak rules
-
-- Habit date keys are local calendar dates (`YYYY-MM-DD`), not UTC timestamps.
-- Calendar arithmetic uses `addDays()` to avoid daylight-saving millisecond errors.
-- Today is still an open day: a missed check-in today does not break a streak until the following day.
-- Completion logs should be unique per habit and date.
-
-## Project layout
-
-The repository currently contains the component and utility source files at the root. `App.tsx` imports from `./hooks` and `./lib`, and `index.html` loads `/src/main.tsx`; make sure the source files are organised into the expected `src/` layout before the production build is considered verified.
-
-## Test coverage
-
-- Date formatting in local time, month/year boundaries and Monday-based weeks.
-- Current and longest streaks, duplicate logs, missing-day gaps and weekly completion.
-- Local storage round trips, malformed data and read/write exceptions.
-
-## Planned improvements
-
-- More expressive dashboard, filters and custom schedules.
-- Mobile-first navigation and accessible interaction polish.
-- Calendar history, progress insights and optional reminders.
-- PWA/offline improvements and cross-device sync only with a deliberate backend/auth design.
+No license is specified. Add a `LICENSE` file to define reuse terms.
