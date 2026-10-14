@@ -1,70 +1,44 @@
 # HabitSphere
 
-[![Repository](https://img.shields.io/badge/GitHub-Repository-181717?logo=github)](https://github.com/saikishore2410/HabitSphere) [![Issues](https://img.shields.io/github/issues/saikishore2410/HabitSphere)](https://github.com/saikishore2410/HabitSphere/issues) [![Last Commit](https://img.shields.io/github/last-commit/saikishore2410/HabitSphere)](https://github.com/saikishore2410/HabitSphere/commits/main)
+[![Source](https://img.shields.io/badge/Source-GitHub-181717?logo=github)](https://github.com/kandisaikishore/HabitSphere) [![Last Commit](https://img.shields.io/github/last-commit/kandisaikishore/HabitSphere)](https://github.com/kandisaikishore/HabitSphere/commits/main)
 
-> HabitSphere helps users check off daily habits, track streaks, and see progress across the week. The current app stores habit data in the browser.
+HabitSphere is a habit-tracking project intended to help users build routines and reflect on progress. The current source determines the available habit creation, tracking, and summary features.
 
-## Live Demo
+## Project goals
 
-**Deployment URL:** Not verified yet. A live link will be added here after confirming the hosting provider's deployed service URL. Do not treat the repository URL as the live application.
+- Make habits and recurring routines easy to organize
+- Track completion over time where supported
+- Present progress in an encouraging, understandable way
+- Keep personal data private and user-controlled
 
-## At a glance
-
-- **Purpose:** Understand the problem and supported workflows from the feature and scope sections below.
-- **Setup:** Follow the project-specific steps in **Getting started** or **Run locally**; verify commands against the current source and package scripts.
-- **Configuration:** Keep API keys, database passwords, tokens, and user data out of commits. Use local environment variables for secrets.
-- **Quality:** Run the available build, tests, and lint checks before proposing changes.
-
-**A lightweight, local-first habit tracker for building routines and reviewing consistency.**
-
-## Features
-
-- Create habits with validation for blank names, duplicates, and long names
-- Check or uncheck today's completion with one tap
-- Track current and best streaks
-- Review Monday–Sunday completion history for each habit
-- See daily progress and weekly consistency
-- Delete habits with confirmation
-- Persist data in browser `localStorage`
-- Handle unavailable or malformed local storage safely
-
-## Tech stack
-
-- React
-- TypeScript
-- Vite
-
-## Requirements
-
-- Node.js 20+
-
-## Quick start
+## Getting started
 
 ```bash
-git clone https://github.com/saikishore2410/HabitSphere.git
+git clone https://github.com/kandisaikishore/HabitSphere.git
 cd HabitSphere
-npm install
-npm run dev
 ```
 
-## Quality checks
+Install project dependencies using the package manager and scripts declared in the repository. Configure backend credentials locally and never commit secrets.
 
-```bash
-npm test
-npm run lint
-npm run build
-```
+## Validation checklist
 
-Confirm the current `package.json` scripts if any command is unavailable in your branch.
+- Test creating, editing, and completing habits
+- Verify recurrence, date boundaries, and streak calculations where implemented
+- Handle empty states and invalid input
+- Confirm data persistence and user-data isolation
+- Test mobile layouts, keyboard access, and readable feedback
 
-## Data and limitations
+## Future improvements
 
-Habit history is stored locally in the current browser. It does not automatically synchronize across devices or accounts. Use the demo workspace to evaluate the interface; add backend persistence and account controls if multi-device usage is required.
+- Provide flexible schedules and progress summaries
+- Add tests for date/time edge cases
+- Improve export and backup options if appropriate
+- Document privacy and retention behaviour
 
 ## Contributing
 
-For bug reports, provide steps to reproduce. Include tests for streak calculation, date boundaries, and persistence changes.
+Report bugs with reproduction steps and include relevant test results.
 
 ## License
 
-No license is specified. Add a `LICENSE` file to define reuse terms.
+No license file is currently declared. Add a `LICENSE` file to define reuse terms.
