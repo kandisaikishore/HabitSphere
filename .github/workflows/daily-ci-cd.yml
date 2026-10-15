@@ -99,7 +99,7 @@ jobs:
                 yarn install --immutable
                 PM=yarn
               elif [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then
-                npm ci || npm ci --legacy-peer-deps
+                npm install --no-audit --no-fund
                 PM=npm
               else
                 npm install
