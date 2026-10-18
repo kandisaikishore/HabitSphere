@@ -22,33 +22,54 @@ jobs:
           python-version: "3.12"
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "22"
+          cache: npm
       - name: Java tests
         shell: bash
         run: |
-          set -e
-          if [ -f pom.xml ]; then mvn --batch-mode test
-          elif [ -x ./gradlew ]; then ./gradlew test
-          elif [ -f build.gradle ] || [ -f build.gradle.kts ]; then echo "Gradle wrapper missing; skipped."
-          else echo "No root Java build manifest found."; fi
+          set -euo pipefail
+          if [ -f pom.xml ]; then
+            mvn --batch-mode test
+          elif [ -x ./gradlew ]; then
+            ./gradlew test
+          elif [ -f build.gradle ] || [ -f build.gradle.kts ]; then
+            echo "Gradle build file exists but the Gradle wrapper is missing." >&2
+            exit 1
+          elif find . -type d \\( -name .git -o -name node_modules -o -name target \\) -prune -o -type f -name '*.java' -print -quit | grep -q .; then
+            mkdir -p /tmp/java-classes
+            mapfile -d '' java_files < <(find . -type d \\( -name .git -o -name node_modules -o -name target \\) -prune -o -type f -name '*.java' -print0)
+            javac -Xlint:all -d /tmp/java-classes "${java_files[@]}"
+          else
+            echo "No Java sources found."
+          fi
       - name: Python tests
         shell: bash
         run: |
-          set -e
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-          if [ -d tests ] || find . -maxdepth 2 -name 'test_*.py' -print -quit | grep -q .; then pip install pytest; pytest -q
-          else echo "No Python tests found."; fi
+          set -euo pipefail
+          if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
+          if find . -type d \\( -name .git -o -name node_modules -o -name .venv -o -name __pycache__ \\) -prune -o -type f \\( -name 'test_*.py' -o -name '*_test.py' \\) -print -quit | grep -q .; then
+            python -m pip install pytest
+            python -m pytest -q
+          elif find . -type d \\( -name .git -o -name node_modules -o -name .venv -o -name __pycache__ \\) -prune -o -type f -name '*.py' -print -quit | grep -q .; then
+            python -m compileall -q .
+            echo "Python syntax compilation passed; no Python tests are defined."
+          else
+            echo "No Python sources found."
+          fi
       - name: Node tests and build
         shell: bash
         run: |
-          set -e
+          set -euo pipefail
           if [ -f package.json ]; then
-            # Repair stale lockfiles, but only continue when install succeeds.
             if [ -f package-lock.json ]; then
-              npm ci || { echo "npm ci failed; attempting lockfile repair with npm install"; npm install; }
+              npm ci
             else
-              npm install
+              echo "package.json exists but package-lock.json is missing; generating a lockfile is required for reproducible CI." >&2
+              exit 1
             fi
-            npm test --if-present
+            node -e "const s=require('./package.json').scripts||{}; if(!s.test) { console.error('A test script is required for this application.'); process.exit(1); }"
+            npm test
             npm run build --if-present
-          else echo "No root package.json found."; fi
+          else
+            echo "No root package.json found."
+          fi
