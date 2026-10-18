@@ -35,9 +35,9 @@ jobs:
           elif [ -f build.gradle ] || [ -f build.gradle.kts ]; then
             echo "Gradle build file exists but the Gradle wrapper is missing." >&2
             exit 1
-          elif find . -type d \\( -name .git -o -name node_modules -o -name target \\) -prune -o -type f -name '*.java' -print -quit | grep -q .; then
+          elif find . -type d \( -name .git -o -name node_modules -o -name target \) -prune -o -type f -name '*.java' -print -quit | grep -q .; then
             mkdir -p /tmp/java-classes
-            mapfile -d '' java_files < <(find . -type d \\( -name .git -o -name node_modules -o -name target \\) -prune -o -type f -name '*.java' -print0)
+            mapfile -d '' java_files < <(find . -type d \( -name .git -o -name node_modules -o -name target \) -prune -o -type f -name '*.java' -print0)
             javac -Xlint:all -d /tmp/java-classes "${java_files[@]}"
           else
             echo "No Java sources found."
@@ -47,10 +47,10 @@ jobs:
         run: |
           set -euo pipefail
           if [ -f requirements.txt ]; then python -m pip install -r requirements.txt; fi
-          if find . -type d \\( -name .git -o -name node_modules -o -name .venv -o -name __pycache__ \\) -prune -o -type f \\( -name 'test_*.py' -o -name '*_test.py' \\) -print -quit | grep -q .; then
+          if find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name __pycache__ \) -prune -o -type f \( -name 'test_*.py' -o -name '*_test.py' \) -print -quit | grep -q .; then
             python -m pip install pytest
             python -m pytest -q
-          elif find . -type d \\( -name .git -o -name node_modules -o -name .venv -o -name __pycache__ \\) -prune -o -type f -name '*.py' -print -quit | grep -q .; then
+          elif find . -type d \( -name .git -o -name node_modules -o -name .venv -o -name __pycache__ \) -prune -o -type f -name '*.py' -print -quit | grep -q .; then
             python -m compileall -q .
             echo "Python syntax compilation passed; no Python tests are defined."
           else
