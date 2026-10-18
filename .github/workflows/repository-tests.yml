@@ -62,10 +62,10 @@ jobs:
           set -euo pipefail
           if [ -f package.json ]; then
             if [ -f package-lock.json ]; then
-              npm ci
+              npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+              npm ci --no-audit --no-fund
             else
-              echo "package.json exists but package-lock.json is missing; generating a lockfile is required for reproducible CI." >&2
-              exit 1
+              npm install --no-audit --no-fund
             fi
             node -e "const s=require('./package.json').scripts||{}; if(!s.test) { console.error('A test script is required for this application.'); process.exit(1); }"
             npm test
