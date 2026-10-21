@@ -34,9 +34,9 @@ jobs:
         shell: bash
         run: |
           node -e "JSON.parse(require('fs').readFileSync('package.json','utf8'))"
-          if [[ -f package-lock.json ]]; then npm ci
-          elif [[ -f pnpm-lock.yaml ]]; then corepack enable && pnpm install --frozen-lockfile --config.ignore-scripts=sharp
+          if [[ -f pnpm-lock.yaml ]]; then corepack enable && pnpm install --frozen-lockfile --config.ignore-scripts=sharp
           elif [[ -f yarn.lock ]]; then corepack enable && yarn install --immutable
+          elif [[ -f package-lock.json ]]; then npm ci
           else npm install --package-lock=false; fi
       - name: Run declared Node checks
         if: steps.detect.outputs.node == 'true'
