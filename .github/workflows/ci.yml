@@ -12,6 +12,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: compatibility-quality-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   quality:
     name: Node ${{ matrix.node-version }} / tests and build
@@ -27,11 +31,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
+          cache: npm
       - name: Verify lockfile is present
         run: test -f package-lock.json
       - name: Install dependencies
-        run: npm install --package-lock-only --ignore-scripts
-      - name: Install from lockfile
         run: npm ci
       - name: Run unit tests
         run: npm test
