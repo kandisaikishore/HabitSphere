@@ -23,8 +23,7 @@ jobs:
           node-version: 22
           cache: npm
       - name: Install dependencies
-        run: |
-          if [ -f package-lock.json ]; then npm ci; else npm install --package-lock=false; fi
+        run: npm ci
       - name: Run tests
         run: npm test
       - name: Build production bundle
