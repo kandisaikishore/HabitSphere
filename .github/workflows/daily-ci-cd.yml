@@ -99,10 +99,12 @@ jobs:
                 yarn install --immutable
                 PM=yarn
               elif [[ -f package-lock.json || -f npm-shrinkwrap.json ]]; then
+                # npm ci requires a complete, synchronized lockfile. Use npm install
+                # so incomplete lockfiles are repaired during CI instead of failing.
                 npm install --no-audit --no-fund
                 PM=npm
               else
-                npm install
+                npm install --no-audit --no-fund
                 PM=npm
               fi
               has_test="$(node -e "const s=require('./package.json').scripts||{};process.stdout.write(s.test?'yes':'no')")"
