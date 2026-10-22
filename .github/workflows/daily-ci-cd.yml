@@ -271,6 +271,13 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+      - name: Enforce test result
+        if: steps.checks.outcome != 'success'
+        shell: bash
+        run: |
+          echo "Automated checks failed. Review the test logs above and fix the underlying defect." >> "$GITHUB_STEP_SUMMARY"
+          exit 1
+
       - name: Fail workflow if checks failed
         if: always() && steps.checks.outcome != 'success'
         run: |
