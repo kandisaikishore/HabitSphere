@@ -33,8 +33,8 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - name: Verify lockfile is present
         run: test -f package-lock.json
-      - name: Install dependencies and repair stale lockfile
-        run: npm install --no-audit --no-fund
+      - name: Install dependencies from the committed lockfile
+        run: npm ci --no-audit --no-fund
       - name: Run unit tests
         run: npm test
       - name: Type-check and production build
