@@ -18,12 +18,15 @@ concurrency:
 
 jobs:
   quality:
-    name: Node ${{ matrix.node-version }} / tests and build
+    name: Node ${{ matrix.node-version }} / ${{ matrix.timezone }} / tests and build
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         node-version: [20, 22]
+        timezone: [UTC, America/New_York, Asia/Kolkata]
+    env:
+      TZ: ${{ matrix.timezone }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
