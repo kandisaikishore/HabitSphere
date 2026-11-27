@@ -21,7 +21,7 @@ describe("addDays", () => {
     expect(addDays("2026-03-08", 1)).toBe("2026-03-09");
     expect(addDays("2026-03-09", -1)).toBe("2026-03-08");
 
-    if (process.env.TZ === "America/New_York") {
+    if (Intl.DateTimeFormat().resolvedOptions().timeZone === "America/New_York") {
       const before = new Date(2026, 2, 8, 12);
       const after = new Date(2026, 2, 9, 12);
       expect(after.getTime() - before.getTime()).toBe(23 * 60 * 60 * 1000);
@@ -35,12 +35,12 @@ describe("addDays", () => {
     expect(addDays("2026-11-01", 1)).toBe("2026-11-02");
     expect(addDays("2026-11-02", -1)).toBe("2026-11-01");
 
-    if (process.env.TZ === "America/New_York") {
-      const before = new Date(2026, 10, 1, 12);
-      const after = new Date(2026, 10, 2, 12);
+    if (Intl.DateTimeFormat().resolvedOptions().timeZone === "America/New_York") {
+      const before = new Date(2026, 9, 31, 12);
+      const after = new Date(2026, 10, 1, 12);
       expect(after.getTime() - before.getTime()).toBe(25 * 60 * 60 * 1000);
-      expect(toLocalDateKey(before)).toBe("2026-11-01");
-      expect(toLocalDateKey(after)).toBe("2026-11-02");
+      expect(toLocalDateKey(before)).toBe("2026-10-31");
+      expect(toLocalDateKey(after)).toBe("2026-11-01");
     }
   });
 });
