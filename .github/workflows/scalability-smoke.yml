@@ -72,7 +72,7 @@ jobs:
           npm run --if-present build
 
       - name: Validate Python syntax when present
-        if hashFiles('**/*.py') != ''
+        if: hashFiles('**/*.py') != ''
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
