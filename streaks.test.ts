@@ -22,11 +22,11 @@ describe("addDays", () => {
     expect(addDays("2026-03-09", -1)).toBe("2026-03-08");
 
     if (Intl.DateTimeFormat().resolvedOptions().timeZone === "America/New_York") {
-      const before = new Date(2026, 2, 8, 12);
-      const after = new Date(2026, 2, 9, 12);
+      const before = new Date(2026, 2, 7, 12);
+      const after = new Date(2026, 2, 8, 12);
       expect(after.getTime() - before.getTime()).toBe(23 * 60 * 60 * 1000);
-      expect(toLocalDateKey(before)).toBe("2026-03-08");
-      expect(toLocalDateKey(after)).toBe("2026-03-09");
+      expect(toLocalDateKey(before)).toBe("2026-03-07");
+      expect(toLocalDateKey(after)).toBe("2026-03-08");
     }
   });
 
