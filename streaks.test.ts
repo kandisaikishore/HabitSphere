@@ -15,6 +15,34 @@ describe("addDays", () => {
     expect(addDays("2026-12-31", 1)).toBe("2027-01-01");
     expect(addDays("2026-03-01", -1)).toBe("2026-02-28");
   });
+
+  it("preserves consecutive local dates across the spring DST transition", () => {
+    expect(addDays("2026-03-07", 1)).toBe("2026-03-08");
+    expect(addDays("2026-03-08", 1)).toBe("2026-03-09");
+    expect(addDays("2026-03-09", -1)).toBe("2026-03-08");
+
+    if (process.env.TZ === "America/New_York") {
+      const before = new Date(2026, 2, 8, 12);
+      const after = new Date(2026, 2, 9, 12);
+      expect(after.getTime() - before.getTime()).toBe(23 * 60 * 60 * 1000);
+      expect(toLocalDateKey(before)).toBe("2026-03-08");
+      expect(toLocalDateKey(after)).toBe("2026-03-09");
+    }
+  });
+
+  it("preserves consecutive local dates across the autumn DST transition", () => {
+    expect(addDays("2026-10-31", 1)).toBe("2026-11-01");
+    expect(addDays("2026-11-01", 1)).toBe("2026-11-02");
+    expect(addDays("2026-11-02", -1)).toBe("2026-11-01");
+
+    if (process.env.TZ === "America/New_York") {
+      const before = new Date(2026, 10, 1, 12);
+      const after = new Date(2026, 10, 2, 12);
+      expect(after.getTime() - before.getTime()).toBe(25 * 60 * 60 * 1000);
+      expect(toLocalDateKey(before)).toBe("2026-11-01");
+      expect(toLocalDateKey(after)).toBe("2026-11-02");
+    }
+  });
 });
 
 describe("weekDates", () => {
@@ -27,6 +55,13 @@ describe("weekDates", () => {
   });
   it("treats Sunday as the end of the week", () => {
     expect(weekDates("2026-10-11")[0]).toBe("2026-10-05");
+  });
+  it("keeps week boundaries stable around a DST change", () => {
+    expect(weekDates("2026-03-08")).toEqual([
+      "2026-03-02", "2026-03-03", "2026-03-04", "2026-03-05",
+      "2026-03-06", "2026-03-07", "2026-03-08",
+    ]);
+    expect(weekDates("2026-03-09")[0]).toBe("2026-03-09");
   });
 });
 
